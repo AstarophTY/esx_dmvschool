@@ -19,6 +19,19 @@ function DrawMissionText(msg, time)
 	EndTextCommandPrint(time, true)
 end
 
+function DrawTextUI(text)
+	lib.showTextUI(text..' '..DriveErrors..'/'..Config.MaxErrors, {
+		position = "top-center",
+		icon = 'car-on',
+		iconColor = 'white',
+		style = {
+			borderRadius = 2,
+			backgroundColor = '#141517',
+			color = '#909296',
+		}
+	})
+end
+
 function StartTheoryTest()
 	CurrentTest = 'theory'
 
@@ -160,7 +173,7 @@ CreateThread(function()
 			DisableControlAction(0, 106, true) -- VehicleMouseControlOverride
 		end
 
-		if CurrentTest == 'drive' then
+		if CurrentTest == 'drive' then	
 			sleep = 0
 			local nextCheckPoint = CurrentCheckPoint + 1
 
@@ -199,6 +212,7 @@ CreateThread(function()
 
 				if distance <= 3.0 then
 					Config.CheckPoints[nextCheckPoint].Action(playerPed, CurrentVehicle, SetCurrentZoneType)
+					Config.CheckPoints[nextCheckPoint].Text()
 					CurrentCheckPoint = CurrentCheckPoint + 1
 				end
 			end
@@ -247,6 +261,7 @@ CreateThread(function()
 							DriveErrors       = DriveErrors + 1
 							IsAboveSpeedLimit = true
 
+							Config.CheckPoints[CurrentCheckPoint].Text()
 							ESX.ShowNotification(TranslateCap('driving_too_fast', v))
 							ESX.ShowNotification(TranslateCap('errors', DriveErrors, Config.MaxErrors))
 						end
@@ -264,6 +279,7 @@ CreateThread(function()
 
 					ESX.ShowNotification(TranslateCap('you_damaged_veh'))
 					ESX.ShowNotification(TranslateCap('errors', DriveErrors, Config.MaxErrors))
+					Config.CheckPoints[CurrentCheckPoint].Text()
 
 					-- avoid stacking faults
 					LastVehicleHealth = health
